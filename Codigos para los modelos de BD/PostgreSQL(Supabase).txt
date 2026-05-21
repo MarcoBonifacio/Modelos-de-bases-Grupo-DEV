@@ -1,0 +1,449 @@
+-- =========================================================================
+-- 1. SHALOM ENVIOS
+-- =========================================================================
+CREATE SCHEMA IF NOT EXISTS shalom_envios;
+SET search_path TO shalom_envios, public;
+
+-- TABLA: Cliente
+CREATE TABLE shalom_envios."Cliente" (
+    idC INT PRIMARY KEY,
+    tipoDocumC VARCHAR(20),
+    nroDocumC VARCHAR(20),
+    nombresC VARCHAR(50),
+    paternoC VARCHAR(50),
+    maternoC VARCHAR(50),
+    celularC VARCHAR(20),
+    idC_relacionado INT,
+    FOREIGN KEY (idC_relacionado) REFERENCES shalom_envios."Cliente"(idC)
+);
+
+-- TABLA: Comprobante
+CREATE TABLE shalom_envios."Comprobante" (
+    idComp INT PRIMARY KEY,
+    fechaHoraComp TIMESTAMP,
+    totalComp DECIMAL(10,2),
+    OrigenComp VARCHAR(100),
+    DestinoComp VARCHAR(100),
+    idC INT NOT NULL,
+    FOREIGN KEY (idC) REFERENCES shalom_envios."Cliente"(idC)
+);
+
+-- TABLA: Paquete
+CREATE TABLE shalom_envios."Paquete" (
+    idP INT PRIMARY KEY,
+    descripcionP VARCHAR(250),
+    pesoP DECIMAL(10,2)
+);
+
+-- TABLA: DetalleDelComprobante
+CREATE TABLE shalom_envios."DetalleDelComprobante" (
+    idDet INT PRIMARY KEY,
+    precioPorKiloDet DECIMAL(10,2),
+    subtotalDet DECIMAL(10,2),
+    idComp INT NOT NULL,
+    idP INT NOT NULL,
+    FOREIGN KEY (idComp) REFERENCES shalom_envios."Comprobante"(idComp),
+    FOREIGN KEY (idP) REFERENCES shalom_envios."Paquete"(idP)
+);
+
+
+-- =========================================================================
+-- 2. SUPERGIROS BANCOS
+-- =========================================================================
+CREATE SCHEMA IF NOT EXISTS supergiros_bancos;
+SET search_path TO supergiros_bancos, public;
+
+-- TABLA: Banco
+CREATE TABLE supergiros_bancos."Banco" (
+    idB INT PRIMARY KEY,
+    nombreB VARCHAR(100),
+    paginaWebB VARCHAR(150)
+);
+
+-- TABLA: Cliente
+CREATE TABLE supergiros_bancos."Cliente" (
+    idC INT PRIMARY KEY,
+    tipoDocumC VARCHAR(20),
+    nroDocumC VARCHAR(20),
+    nombresC VARCHAR(50),
+    paternoC VARCHAR(50),
+    maternoC VARCHAR(50),
+    celularC VARCHAR(20),
+    idC_conyuge INT,
+    FOREIGN KEY (idC_conyuge) REFERENCES supergiros_bancos."Cliente"(idC)
+);
+
+-- TABLA: Cuenta
+CREATE TABLE supergiros_bancos."Cuenta" (
+    idCuenta INT PRIMARY KEY,
+    nroCuenta VARCHAR(30),
+    saldoCuenta DECIMAL(12,2),
+    idB INT NOT NULL,
+    idC INT NOT NULL,
+    FOREIGN KEY (idB) REFERENCES supergiros_bancos."Banco"(idB),
+    FOREIGN KEY (idC) REFERENCES supergiros_bancos."Cliente"(idC)
+);
+
+-- TABLA: Empleado
+CREATE TABLE supergiros_bancos."Empleado" (
+    idE INT PRIMARY KEY,
+    tipoDocumE VARCHAR(20),
+    nroDocumE VARCHAR(20),
+    nombresE VARCHAR(50),
+    paternoE VARCHAR(50),
+    maternoE VARCHAR(50),
+    celularE VARCHAR(20)
+);
+
+-- TABLA: Operacion
+CREATE TABLE supergiros_bancos."Operacion" (
+    idOpe INT PRIMARY KEY,
+    tipoOpe VARCHAR(50),
+    fechaHoraOpe TIMESTAMP,
+    montoOpe DECIMAL(10,2),
+    comisionOpe DECIMAL(10,2),
+    idCuenta INT NOT NULL,
+    idC INT NOT NULL,
+    idE INT NOT NULL,
+    FOREIGN KEY (idCuenta) REFERENCES supergiros_bancos."Cuenta"(idCuenta),
+    FOREIGN KEY (idC) REFERENCES supergiros_bancos."Cliente"(idC),
+    FOREIGN KEY (idE) REFERENCES supergiros_bancos."Empleado"(idE)
+);
+
+
+-- =========================================================================
+-- 3. INPE ASISTENCIA
+-- =========================================================================
+CREATE SCHEMA IF NOT EXISTS inpe_asistencia;
+SET search_path TO inpe_asistencia, public;
+
+-- TABLA: Año
+CREATE TABLE inpe_asistencia."Ano" (
+    idAno INT PRIMARY KEY,
+    inicioAno DATE,
+    finAno DATE
+);
+
+-- TABLA: Turno
+CREATE TABLE inpe_asistencia."Turno" (
+    idT INT PRIMARY KEY,
+    nombreT VARCHAR(50),
+    inicioT TIME,
+    finT TIME,
+    idAno INT NOT NULL,
+    FOREIGN KEY (idAno) REFERENCES inpe_asistencia."Ano"(idAno)
+);
+
+-- TABLA: Empleado
+CREATE TABLE inpe_asistencia."Empleado" (
+    idE INT PRIMARY KEY,
+    tipoDocumE VARCHAR(20),
+    nroDocumE VARCHAR(20),
+    nombresE VARCHAR(50),
+    paternoE VARCHAR(50),
+    maternoE VARCHAR(50),
+    celularE VARCHAR(20),
+    idSupervisor INT,
+    FOREIGN KEY (idSupervisor) REFERENCES inpe_asistencia."Empleado"(idE)
+);
+
+-- TABLA: Asistencia
+CREATE TABLE inpe_asistencia."Asistencia" (
+    idA INT PRIMARY KEY,
+    fechaA DATE,
+    diaA VARCHAR(20),
+    esFeriadoA CHAR(2),
+    asistioA CHAR(2),
+    tardoA CHAR(2),
+    horaEntradaA TIME,
+    horaSalidaA TIME,
+    idT INT NOT NULL,
+    idE INT NOT NULL,
+    FOREIGN KEY (idT) REFERENCES inpe_asistencia."Turno"(idT),
+    FOREIGN KEY (idE) REFERENCES inpe_asistencia."Empleado"(idE)
+);
+
+
+-- =========================================================================
+-- 4. DON GALLINO VENTAS
+-- =========================================================================
+CREATE SCHEMA IF NOT EXISTS dongallino_ventas;
+SET search_path TO dongallino_ventas, public;
+
+-- TABLA: Cliente
+CREATE TABLE dongallino_ventas."Cliente" (
+    idC INT PRIMARY KEY,
+    tipoDocumC VARCHAR(20),
+    nroDocumC VARCHAR(20),
+    nombresC VARCHAR(50),
+    paternoC VARCHAR(50),
+    maternoC VARCHAR(50),
+    celularC VARCHAR(20)
+);
+
+-- TABLA: Comprobante
+CREATE TABLE dongallino_ventas."Comprobante" (
+    idComp INT PRIMARY KEY,
+    fechaHoraComp TIMESTAMP,
+    totalComp DECIMAL(10,2),
+    idC INT NOT NULL,
+    FOREIGN KEY (idC) REFERENCES dongallino_ventas."Cliente"(idC)
+);
+
+-- TABLA: Categoria
+CREATE TABLE dongallino_ventas."Categoria" (
+    idCat INT PRIMARY KEY,
+    nombreCat VARCHAR(50),
+    descripcionCat VARCHAR(150)
+);
+
+-- TABLA: Producto
+CREATE TABLE dongallino_ventas."Producto" (
+    idP INT PRIMARY KEY,
+    nombreP VARCHAR(100),
+    descripcionP VARCHAR(250),
+    precioReferencialP DECIMAL(10,2),
+    idCat INT NOT NULL,
+    FOREIGN KEY (idCat) REFERENCES dongallino_ventas."Categoria"(idCat)
+);
+
+-- TABLA: Detalle
+CREATE TABLE dongallino_ventas."Detalle" (
+    idDet INT PRIMARY KEY,
+    cantidadDet INT,
+    precioRealUnitarioDet DECIMAL(10,2),
+    subtotalDet DECIMAL(10,2),
+    idComp INT NOT NULL,
+    idP INT NOT NULL,
+    FOREIGN KEY (idComp) REFERENCES dongallino_ventas."Comprobante"(idComp),
+    FOREIGN KEY (idP) REFERENCES dongallino_ventas."Producto"(idP)
+);
+
+
+-- =========================================================================
+-- 5. ELECTROTRACK ALMACEN
+-- =========================================================================
+CREATE SCHEMA IF NOT EXISTS electrotrack_almacen;
+SET search_path TO electrotrack_almacen, public;
+
+-- TABLA: Proveedor
+CREATE TABLE electrotrack_almacen."Proveedor" (
+    idP INT PRIMARY KEY,
+    razonSocialP VARCHAR(100),
+    direccionP VARCHAR(150)
+);
+
+-- TABLA: OrdenDeCompra
+CREATE TABLE electrotrack_almacen."OrdenDeCompra" (
+    idOrden INT PRIMARY KEY,
+    fechaHoraOrden TIMESTAMP,
+    totalOrden DECIMAL(12,2),
+    idP INT NOT NULL,
+    FOREIGN KEY (idP) REFERENCES electrotrack_almacen."Proveedor"(idP)
+);
+
+-- TABLA: Cliente
+CREATE TABLE electrotrack_almacen."Cliente" (
+    idC INT PRIMARY KEY,
+    tipoDocumC VARCHAR(20),
+    nroDocumC VARCHAR(20),
+    nombresC VARCHAR(50),
+    paternoC VARCHAR(50),
+    maternoC VARCHAR(50),
+    celularC VARCHAR(20)
+);
+
+-- TABLA: Comprobante
+CREATE TABLE electrotrack_almacen."Comprobante" (
+    idComp INT PRIMARY KEY,
+    tipoComp VARCHAR(50),
+    fechaHoraComp TIMESTAMP,
+    totalComp DECIMAL(12,2),
+    idC INT NOT NULL,
+    FOREIGN KEY (idC) REFERENCES electrotrack_almacen."Cliente"(idC)
+);
+
+-- TABLA: Electrodomestico
+CREATE TABLE electrotrack_almacen."Electrodomestico" (
+    idE INT PRIMARY KEY,
+    nombreE VARCHAR(100),
+    marcaE VARCHAR(50),
+    modeloE VARCHAR(50),
+    precioVentaE DECIMAL(10,2),
+    precioCompraE DECIMAL(10,2)
+);
+
+-- TABLA: detalleDeIngresoSalida
+CREATE TABLE electrotrack_almacen."detalleDeIngresoSalida" (
+    idDet INT PRIMARY KEY,
+    tipoDet VARCHAR(20),
+    subtotalDet DECIMAL(10,2),
+    cantidadDet INT,
+    idOrden INT,
+    idComp INT,
+    idE INT NOT NULL,
+    FOREIGN KEY (idOrden) REFERENCES electrotrack_almacen."OrdenDeCompra"(idOrden),
+    FOREIGN KEY (idComp) REFERENCES electrotrack_almacen."Comprobante"(idComp),
+    FOREIGN KEY (idE) REFERENCES electrotrack_almacen."Electrodomestico"(idE)
+);
+
+
+-- =========================================================================
+-- 6. MACSALUD ASISTENCIA
+-- =========================================================================
+CREATE SCHEMA IF NOT EXISTS macsalud_asistencia;
+SET search_path TO macsalud_asistencia, public;
+
+-- TABLA: Enfermero
+CREATE TABLE macsalud_asistencia."Enfermero" (
+    idE INT PRIMARY KEY,
+    tipoDocumE VARCHAR(20),
+    nroDocumE VARCHAR(20),
+    nombresE VARCHAR(50),
+    paternoE VARCHAR(50),
+    maternoE VARCHAR(50),
+    fechaNacimientoE DATE,
+    generoE VARCHAR(20)
+);
+
+-- TABLA: Ambiente
+CREATE TABLE macsalud_asistencia."Ambiente" (
+    idAmb INT PRIMARY KEY,
+    nroAmb VARCHAR(10),
+    ubicacionAmb VARCHAR(100)
+);
+
+-- TABLA: Calendario
+CREATE TABLE macsalud_asistencia."Calendario" (
+    idC INT PRIMARY KEY,
+    inicioC DATE,
+    finC DATE,
+    nombreC VARCHAR(50)
+);
+
+-- TABLA: Asistencia
+CREATE TABLE macsalud_asistencia."Asistencia" (
+    idA INT PRIMARY KEY,
+    fechaA DATE,
+    diaA VARCHAR(20),
+    asistioA CHAR(2),
+    tardoA CHAR(2),
+    horaEntradaA TIME,
+    horaSalidaA TIME,
+    justificacionA VARCHAR(250),
+    esDescansoA CHAR(2),
+    idE INT NOT NULL,
+    idAmb INT NOT NULL,
+    idC INT NOT NULL,
+    FOREIGN KEY (idE) REFERENCES macsalud_asistencia."Enfermero"(idE),
+    FOREIGN KEY (idAmb) REFERENCES macsalud_asistencia."Ambiente"(idAmb),
+    FOREIGN KEY (idC) REFERENCES macsalud_asistencia."Calendario"(idC)
+);
+
+
+-- =========================================================================
+-- 7. LOS ANGELES FACTURACION
+-- =========================================================================
+CREATE SCHEMA IF NOT EXISTS losangeles_facturacion;
+SET search_path TO losangeles_facturacion, public;
+
+-- TABLA: Cliente
+CREATE TABLE losangeles_facturacion."Cliente" (
+    idC INT PRIMARY KEY,
+    tipoDocumC VARCHAR(20),
+    nroDocumC VARCHAR(20),
+    nombresC VARCHAR(50),
+    paternoC VARCHAR(50),
+    maternoC VARCHAR(50),
+    celularC VARCHAR(20)
+);
+
+-- TABLA: Comprobante
+CREATE TABLE losangeles_facturacion."Comprobante" (
+    idComp INT PRIMARY KEY,
+    fechaHoraComp TIMESTAMP,
+    totalComp DECIMAL(10,2),
+    idC INT NOT NULL,
+    FOREIGN KEY (idC) REFERENCES losangeles_facturacion."Cliente"(idC)
+);
+
+-- TABLA: Categoria
+CREATE TABLE losangeles_facturacion."Categoria" (
+    idCat INT PRIMARY KEY,
+    nombreCat VARCHAR(50),
+    descripcionCat VARCHAR(150)
+);
+
+-- TABLA: Producto
+CREATE TABLE losangeles_facturacion."Producto" (
+    idP INT PRIMARY KEY,
+    nombreP VARCHAR(100),
+    descripcionP VARCHAR(250),
+    precioReferencialP DECIMAL(10,2),
+    idCat INT NOT NULL,
+    FOREIGN KEY (idCat) REFERENCES losangeles_facturacion."Categoria"(idCat)
+);
+
+-- TABLA: Detalle
+CREATE TABLE losangeles_facturacion."Detail" ( -- Cambiado de 'Detalle' para evitar conflictos internos en Postgres si aplica
+    idDet INT PRIMARY KEY,
+    cantidadDet INT,
+    precioRealUnitarioDet DECIMAL(10,2),
+    subtotalDet DECIMAL(10,2),
+    idComp INT NOT NULL,
+    idP INT NOT NULL,
+    FOREIGN KEY (idComp) REFERENCES losangeles_facturacion."Comprobante"(idComp),
+    FOREIGN KEY (idP) REFERENCES losangeles_facturacion."Producto"(idP)
+);
+
+
+-- =========================================================================
+-- 8. TITANIUM GYM
+-- =========================================================================
+CREATE SCHEMA IF NOT EXISTS titanium_gym;
+SET search_path TO titanium_gym, public;
+
+-- TABLA: Cliente
+CREATE TABLE titanium_gym."Cliente" (
+    idC INT PRIMARY KEY,
+    tipoDocumC VARCHAR(20),
+    nroDocumC VARCHAR(20),
+    nombresC VARCHAR(50),
+    paternoC VARCHAR(50),
+    maternoC VARCHAR(50),
+    generoC VARCHAR(20),
+    fechaNacimC DATE,
+    enfermedadesC VARCHAR(250),
+    celularC VARCHAR(20)
+);
+
+-- TABLA: Disciplina
+CREATE TABLE titanium_gym."Disciplina" (
+    idD INT PRIMARY KEY,
+    nombreD VARCHAR(50),
+    descripcionD VARCHAR(150)
+);
+
+-- TABLA: GrupoDisciplina
+CREATE TABLE titanium_gym."GrupoDisciplina" (
+    idG INT PRIMARY KEY,
+    nombreG VARCHAR(50),
+    fechaInicioG DATE,
+    fechaFinG DATE,
+    idD INT NOT NULL,
+    FOREIGN KEY (idD) REFERENCES titanium_gym."Disciplina"(idD)
+);
+
+-- TABLA: Asistencia
+CREATE TABLE titanium_gym."Asistencia" (
+    idA INT PRIMARY KEY,
+    fechaA DATE,
+    diaA VARCHAR(20),
+    esFeriadoA CHAR(2),
+    asistioA CHAR(2),
+    horaEntradaA TIME,
+    idC INT NOT NULL,
+    idG INT NOT NULL,
+    FOREIGN KEY (idC) REFERENCES titanium_gym."Cliente"(idC),
+    FOREIGN KEY (idG) REFERENCES titanium_gym."GrupoDisciplina"(idG)
+);

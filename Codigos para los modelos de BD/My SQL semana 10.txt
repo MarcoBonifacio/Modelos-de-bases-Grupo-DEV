@@ -1,0 +1,449 @@
+-- =============================================================================
+-- 1. BASE DE DATOS: Shalom_Envios
+-- =============================================================================
+CREATE DATABASE IF NOT EXISTS Shalom_Envios;
+USE Shalom_Envios;
+
+-- TABLA: Cliente
+CREATE TABLE Cliente (
+    idC INT PRIMARY KEY,
+    tipoDocumC VARCHAR(20),
+    nroDocumC VARCHAR(20),
+    nombresC VARCHAR(50),
+    paternoC VARCHAR(50),
+    maternoC VARCHAR(50),
+    celularC VARCHAR(20),
+    idC_relacionado INT, -- Relación reflexiva (1 a muchos/opcional)
+    FOREIGN KEY (idC_relacionado) REFERENCES Cliente(idC)
+) ENGINE=InnoDB;
+
+-- TABLA: Comprobante
+CREATE TABLE Comprobante (
+    idComp INT PRIMARY KEY,
+    fechaHoraComp DATETIME,
+    totalComp DECIMAL(10,2),
+    OrigenComp VARCHAR(100),
+    DestinoComp VARCHAR(100),
+    idC INT NOT NULL,
+    FOREIGN KEY (idC) REFERENCES Cliente(idC)
+) ENGINE=InnoDB;
+
+-- TABLA: Paquete
+CREATE TABLE Paquete (
+    idP INT PRIMARY KEY,
+    descripcionP VARCHAR(250),
+    pesoP DECIMAL(10,2)
+) ENGINE=InnoDB;
+
+-- TABLA: DetalleDelComprobante
+CREATE TABLE DetalleDelComprobante (
+    idDet INT PRIMARY KEY,
+    precioPorKiloDet DECIMAL(10,2),
+    subtotalDet DECIMAL(10,2),
+    idComp INT NOT NULL,
+    idP INT NOT NULL,
+    FOREIGN KEY (idComp) REFERENCES Comprobante(idComp),
+    FOREIGN KEY (idP) REFERENCES Paquete(idP)
+) ENGINE=InnoDB;
+
+
+-- =============================================================================
+-- 2. BASE DE DATOS: SuperGiros_Bancos
+-- =============================================================================
+CREATE DATABASE IF NOT EXISTS SuperGiros_Bancos;
+USE SuperGiros_Bancos;
+
+-- TABLA: Banco
+CREATE TABLE Banco (
+    idB INT PRIMARY KEY,
+    nombreB VARCHAR(100),
+    paginaWebB VARCHAR(150)
+) ENGINE=InnoDB;
+
+-- TABLA: Cliente
+CREATE TABLE Cliente (
+    idC INT PRIMARY KEY,
+    tipoDocumC VARCHAR(20),
+    nroDocumC VARCHAR(20),
+    nombresC VARCHAR(50),
+    paternoC VARCHAR(50),
+    maternoC VARCHAR(50),
+    celularC VARCHAR(20),
+    idC_conyuge INT, -- Relación reflexiva evidenciada en el diagrama
+    FOREIGN KEY (idC_conyuge) REFERENCES Cliente(idC)
+) ENGINE=InnoDB;
+
+-- TABLA: Cuenta
+CREATE TABLE Cuenta (
+    idCuenta INT PRIMARY KEY,
+    nroCuenta VARCHAR(30),
+    saldoCuenta DECIMAL(12,2),
+    idB INT NOT NULL,
+    idC INT NOT NULL,
+    FOREIGN KEY (idB) REFERENCES Banco(idB),
+    FOREIGN KEY (idC) REFERENCES Cliente(idC)
+) ENGINE=InnoDB;
+
+-- TABLA: Empleado
+CREATE TABLE Empleado (
+    idE INT PRIMARY KEY,
+    tipoDocumE VARCHAR(20),
+    nroDocumE VARCHAR(20),
+    nombresE VARCHAR(50),
+    paternoE VARCHAR(50),
+    maternoE VARCHAR(50),
+    celularE VARCHAR(20)
+) ENGINE=InnoDB;
+
+-- TABLA: Operacion
+CREATE TABLE Operacion (
+    idOpe INT PRIMARY KEY,
+    tipoOpe VARCHAR(50),
+    fechaHoraOpe DATETIME,
+    montoOpe DECIMAL(10,2),
+    comisionOpe DECIMAL(10,2),
+    idCuenta INT NOT NULL,
+    idC INT NOT NULL,
+    idE INT NOT NULL,
+    FOREIGN KEY (idCuenta) REFERENCES Cuenta(idCuenta),
+    FOREIGN KEY (idC) REFERENCES Cliente(idC),
+    FOREIGN KEY (idE) REFERENCES Empleado(idE)
+) ENGINE=InnoDB;
+
+
+-- =============================================================================
+-- 3. BASE DE DATOS: INPE_Asistencia
+-- =============================================================================
+CREATE DATABASE IF NOT EXISTS INPE_Asistencia;
+USE INPE_Asistencia;
+
+-- TABLA: Año
+CREATE TABLE Ano (
+    idAno INT PRIMARY KEY,
+    inicioAno DATE,
+    finAno DATE
+) ENGINE=InnoDB;
+
+-- TABLA: Turno
+CREATE TABLE Turno (
+    idT INT PRIMARY KEY,
+    nombreT VARCHAR(50),
+    inicioT TIME,
+    finT TIME,
+    idAno INT NOT NULL,
+    FOREIGN KEY (idAno) REFERENCES Ano(idAno)
+) ENGINE=InnoDB;
+
+-- TABLA: Empleado
+CREATE TABLE Empleado (
+    idE INT PRIMARY KEY,
+    tipoDocumE VARCHAR(20),
+    nroDocumE VARCHAR(20),
+    nombresE VARCHAR(50),
+    paternoE VARCHAR(50),
+    maternoE VARCHAR(50),
+    celularE VARCHAR(20),
+    idSupervisor INT, -- Relación reflexiva (Supervisor)
+    FOREIGN KEY (idSupervisor) REFERENCES Empleado(idE)
+) ENGINE=InnoDB;
+
+-- TABLA: Asistencia
+CREATE TABLE Asistencia (
+    idA INT PRIMARY KEY,
+    fechaA DATE,
+    diaA VARCHAR(20),
+    esFeriadoA CHAR(2), -- 'SI' o 'NO'
+    asistioA CHAR(2),
+    tardoA CHAR(2),
+    horaEntradaA TIME,
+    horaSalidaA TIME,
+    idT INT NOT NULL,
+    idE INT NOT NULL,
+    FOREIGN KEY (idT) REFERENCES Turno(idT),
+    FOREIGN KEY (idE) REFERENCES Empleado(idE)
+) ENGINE=InnoDB;
+
+
+-- =============================================================================
+-- 4. BASE DE DATOS: DonGallino_Ventas
+-- =============================================================================
+CREATE DATABASE IF NOT EXISTS DonGallino_Ventas;
+USE DonGallino_Ventas;
+
+-- TABLA: Cliente
+CREATE TABLE Cliente (
+    idC INT PRIMARY KEY,
+    tipoDocumC VARCHAR(20),
+    nroDocumC VARCHAR(20),
+    nombresC VARCHAR(50),
+    paternoC VARCHAR(50),
+    maternoC VARCHAR(50),
+    celularC VARCHAR(20)
+) ENGINE=InnoDB;
+
+-- TABLA: Comprobante
+CREATE TABLE Comprobante (
+    idComp INT PRIMARY KEY,
+    fechaHoraComp DATETIME,
+    totalComp DECIMAL(10,2),
+    idC INT NOT NULL,
+    FOREIGN KEY (idC) REFERENCES Cliente(idC)
+) ENGINE=InnoDB;
+
+-- TABLA: Categoria
+CREATE TABLE Categoria (
+    idCat INT PRIMARY KEY,
+    nombreCat VARCHAR(50),
+    descripcionCat VARCHAR(150)
+) ENGINE=InnoDB;
+
+-- TABLA: Producto
+CREATE TABLE Producto (
+    idP INT PRIMARY KEY,
+    nombreP VARCHAR(100),
+    descripcionP VARCHAR(250),
+    precioReferencialP DECIMAL(10,2),
+    idCat INT NOT NULL,
+    FOREIGN KEY (idCat) REFERENCES Categoria(idCat)
+) ENGINE=InnoDB;
+
+-- TABLA: Detalle
+CREATE TABLE Detalle (
+    idDet INT PRIMARY KEY,
+    cantidadDet INT,
+    precioRealUnitarioDet DECIMAL(10,2),
+    subtotalDet DECIMAL(10,2),
+    idComp INT NOT NULL,
+    idP INT NOT NULL,
+    FOREIGN KEY (idComp) REFERENCES Comprobante(idComp),
+    FOREIGN KEY (idP) REFERENCES Producto(idP)
+) ENGINE=InnoDB;
+
+
+-- =============================================================================
+-- 5. BASE DE DATOS: ElectroTrack_Almacen
+-- =============================================================================
+CREATE DATABASE IF NOT EXISTS ElectroTrack_Almacen;
+USE ElectroTrack_Almacen;
+
+-- TABLA: Proveedor
+CREATE TABLE Proveedor (
+    idP INT PRIMARY KEY,
+    razonSocialP VARCHAR(100),
+    direccionP VARCHAR(150)
+) ENGINE=InnoDB;
+
+-- TABLA: OrdenDeCompra
+CREATE TABLE OrdenDeCompra (
+    idOrden INT PRIMARY KEY,
+    fechaHoraOrden DATETIME,
+    totalOrden DECIMAL(12,2),
+    idP INT NOT NULL,
+    FOREIGN KEY (idP) REFERENCES Proveedor(idP)
+) ENGINE=InnoDB;
+
+-- TABLA: Cliente
+CREATE TABLE Cliente (
+    idC INT PRIMARY KEY,
+    tipoDocumC VARCHAR(20),
+    nroDocumC VARCHAR(20),
+    nombresC VARCHAR(50),
+    paternoC VARCHAR(50),
+    maternoC VARCHAR(50),
+    celularC VARCHAR(20)
+) ENGINE=InnoDB;
+
+-- TABLA: Comprobante
+CREATE TABLE Comprobante (
+    idComp INT PRIMARY KEY,
+    tipoComp VARCHAR(50),
+    fechaHoraComp DATETIME,
+    totalComp DECIMAL(12,2),
+    idC INT NOT NULL,
+    FOREIGN KEY (idC) REFERENCES Cliente(idC)
+) ENGINE=InnoDB;
+
+-- TABLA: Electrodomestico
+CREATE TABLE Electrodomestico (
+    idE INT PRIMARY KEY,
+    nombreE VARCHAR(100),
+    marcaE VARCHAR(50),
+    modeloE VARCHAR(50),
+    precioVentaE DECIMAL(10,2),
+    precioCompraE DECIMAL(10,2)
+) ENGINE=InnoDB;
+
+-- TABLA: detalleDeIngresoSalida
+CREATE TABLE detalleDeIngresoSalida (
+    idDet INT PRIMARY KEY,
+    tipoDet VARCHAR(20), -- 'Ingreso' o 'Salida'
+    subtotalDet DECIMAL(10,2),
+    cantidadDet INT,
+    idOrden INT,         -- Puede ser nulo si es una salida/venta
+    idComp INT,          -- Puede ser nulo si es un ingreso/compra
+    idE INT NOT NULL,
+    FOREIGN KEY (idOrden) REFERENCES OrdenDeCompra(idOrden),
+    FOREIGN KEY (idComp) REFERENCES Comprobante(idComp),
+    FOREIGN KEY (idE) REFERENCES Electrodomestico(idE)
+) ENGINE=InnoDB;
+
+
+-- =============================================================================
+-- 6. BASE DE DATOS: MacSalud_Asistencia
+-- =============================================================================
+CREATE DATABASE IF NOT EXISTS MacSalud_Asistencia;
+USE MacSalud_Asistencia;
+
+-- TABLA: Enfermero
+CREATE TABLE Enfermero (
+    idE INT PRIMARY KEY,
+    tipoDocumE VARCHAR(20),
+    nroDocumE VARCHAR(20),
+    nombresE VARCHAR(50),
+    paternoE VARCHAR(50),
+    maternoE VARCHAR(50),
+    fechaNacimientoE DATE,
+    generoE VARCHAR(20)
+) ENGINE=InnoDB;
+
+-- TABLA: Ambiente
+CREATE TABLE Ambiente (
+    idAmb INT PRIMARY KEY,
+    nroAmb VARCHAR(10),
+    ubicacionAmb VARCHAR(100)
+) ENGINE=InnoDB;
+
+-- TABLA: Calendario
+CREATE TABLE Calendario (
+    idC INT PRIMARY KEY,
+    inicioC DATE,
+    finC DATE,
+    nombreC VARCHAR(50)
+) ENGINE=InnoDB;
+
+-- TABLA: Asistencia
+CREATE TABLE Asistencia (
+    idA INT PRIMARY KEY,
+    fechaA DATE,
+    diaA VARCHAR(20),
+    asistioA CHAR(2),
+    tardoA CHAR(2),
+    horaEntradaA TIME,
+    horaSalidaA TIME,
+    justificacionA VARCHAR(250),
+    esDescansoA CHAR(2),
+    idE INT NOT NULL,
+    idAmb INT NOT NULL,
+    idC INT NOT NULL,
+    FOREIGN KEY (idE) REFERENCES Enfermero(idE),
+    FOREIGN KEY (idAmb) REFERENCES Ambiente(idAmb),
+    FOREIGN KEY (idC) REFERENCES Calendario(idC)
+) ENGINE=InnoDB;
+
+
+-- =============================================================================
+-- 7. BASE DE DATOS: LosAngeles_Facturacion
+-- =============================================================================
+CREATE DATABASE IF NOT EXISTS LosAngeles_Facturacion;
+USE LosAngeles_Facturacion;
+
+-- TABLA: Cliente
+CREATE TABLE Cliente (
+    idC INT PRIMARY KEY,
+    tipoDocumC VARCHAR(20),
+    nroDocumC VARCHAR(20),
+    nombresC VARCHAR(50),
+    paternoC VARCHAR(50),
+    maternoC VARCHAR(50),
+    celularC VARCHAR(20)
+) ENGINE=InnoDB;
+
+-- TABLA: Comprobante
+CREATE TABLE Comprobante (
+    idComp INT PRIMARY KEY,
+    fechaHoraComp DATETIME,
+    totalComp DECIMAL(10,2),
+    idC INT NOT NULL,
+    FOREIGN KEY (idC) REFERENCES Cliente(idC)
+) ENGINE=InnoDB;
+
+-- TABLA: Categoria
+CREATE TABLE Categoria (
+    idCat INT PRIMARY KEY,
+    nombreCat VARCHAR(50),
+    descripcionCat VARCHAR(150)
+) ENGINE=InnoDB;
+
+-- TABLA: Producto
+CREATE TABLE Producto (
+    idP INT PRIMARY KEY,
+    nombreP VARCHAR(100),
+    descripcionP VARCHAR(250),
+    precioReferencialP DECIMAL(10,2),
+    idCat INT NOT NULL,
+    FOREIGN KEY (idCat) REFERENCES Categoria(idCat)
+) ENGINE=InnoDB;
+
+-- TABLA: Detalle
+CREATE TABLE Detalle (
+    idDet INT PRIMARY KEY,
+    cantidadDet INT,
+    precioRealUnitarioDet DECIMAL(10,2),
+    subtotalDet DECIMAL(10,2),
+    idComp INT NOT NULL,
+    idP INT NOT NULL,
+    FOREIGN KEY (idComp) REFERENCES Comprobante(idComp),
+    FOREIGN KEY (idP) REFERENCES Producto(idP)
+) ENGINE=InnoDB;
+
+
+-- =============================================================================
+-- 8. BASE DE DATOS: Titanium_Gym
+-- =============================================================================
+CREATE DATABASE IF NOT EXISTS Titanium_Gym;
+USE Titanium_Gym;
+
+-- TABLA: Cliente
+CREATE TABLE Cliente (
+    idC INT PRIMARY KEY,
+    tipoDocumC VARCHAR(20),
+    nroDocumC VARCHAR(20),
+    nombresC VARCHAR(50),
+    paternoC VARCHAR(50),
+    maternoC VARCHAR(50),
+    generoC VARCHAR(20),
+    fechaNacimC DATE,
+    enfermedadesC VARCHAR(250),
+    celularC VARCHAR(20)
+) ENGINE=InnoDB;
+
+-- TABLA: Disciplina
+CREATE TABLE Disciplina (
+    idD INT PRIMARY KEY,
+    nombreD VARCHAR(50),
+    descripcionD VARCHAR(150)
+) ENGINE=InnoDB;
+
+-- TABLA: GrupoDisciplina
+CREATE TABLE GrupoDisciplina (
+    idG INT PRIMARY KEY,
+    nombreG VARCHAR(50),
+    fechaInicioG DATE,
+    fechaFinG DATE,
+    idD INT NOT NULL,
+    FOREIGN KEY (idD) REFERENCES Disciplina(idD)
+) ENGINE=InnoDB;
+
+-- TABLA: Asistencia
+CREATE TABLE Asistencia (
+    idA INT PRIMARY KEY,
+    fechaA DATE,
+    diaA VARCHAR(20),
+    esFeriadoA CHAR(2),
+    asistioA CHAR(2),
+    horaEntradaA TIME,
+    idC INT NOT NULL,
+    idG INT NOT NULL,
+    FOREIGN KEY (idC) REFERENCES Cliente(idC),
+    FOREIGN KEY (idG) REFERENCES GrupoDisciplina(idG)
+) ENGINE=InnoDB;

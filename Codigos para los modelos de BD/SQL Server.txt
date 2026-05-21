@@ -1,0 +1,411 @@
+1. Sistema de Shalom-Perú (Envío de paquetes)Este sistema creará la base de datos Shalom_Envios.  SQLCREATE DATABASE Shalom_Envios;
+USE Shalom_Envios;
+
+-- TABLA: Cliente
+CREATE TABLE Cliente (
+    idC INT PRIMARY KEY,
+    tipoDocumC VARCHAR(20),
+    nroDocumC VARCHAR(20),
+    nombresC VARCHAR(50),
+    paternoC VARCHAR(50),
+    maternoC VARCHAR(50),
+    celularC VARCHAR(20),
+    idC_relacionado INT, -- Relación reflexiva (1 a muchos/opcional)
+    FOREIGN KEY (idC_relacionado) REFERENCES Cliente(idC)
+);
+
+-- TABLA: Comprobante
+CREATE TABLE Comprobante (
+    idComp INT PRIMARY KEY,
+    fechaHoraComp DATETIME,
+    totalComp DECIMAL(10,2),
+    OrigenComp VARCHAR(100),
+    DestinoComp VARCHAR(100),
+    idC INT NOT NULL,
+    FOREIGN KEY (idC) REFERENCES Cliente(idC)
+);
+
+-- TABLA: Paquete
+CREATE TABLE Paquete (
+    idP INT PRIMARY KEY,
+    descripcionP VARCHAR(250),
+    pesoP DECIMAL(10,2)
+);
+
+-- TABLA: DetalleDelComprobante
+CREATE TABLE DetalleDelComprobante (
+    idDet INT PRIMARY KEY,
+    precioPorKiloDet DECIMAL(10,2),
+    subtotalDet DECIMAL(10,2),
+    idComp INT NOT NULL,
+    idP INT NOT NULL,
+    FOREIGN KEY (idComp) REFERENCES Comprobante(idComp),
+    FOREIGN KEY (idP) REFERENCES Paquete(idP)
+);
+2. Sistema de Super Giros (Transacciones bancarias)Este sistema se almacenará de manera aislada en SuperGiros_Bancos.  SQLCREATE DATABASE SuperGiros_Bancos;
+USE SuperGiros_Bancos;
+
+-- TABLA: Banco
+CREATE TABLE Banco (
+    idB INT PRIMARY KEY,
+    nombreB VARCHAR(100),
+    paginaWebB VARCHAR(150)
+);
+
+-- TABLA: Cliente
+CREATE TABLE Cliente (
+    idC INT PRIMARY KEY,
+    tipoDocumC VARCHAR(20),
+    nroDocumC VARCHAR(20),
+    nombresC VARCHAR(50),
+    paternoC VARCHAR(50),
+    maternoC VARCHAR(50),
+    celularC VARCHAR(20),
+    idC_conyuge INT, -- Relación reflexiva evidenciada en el diagrama
+    FOREIGN KEY (idC_conyuge) REFERENCES Cliente(idC)
+);
+
+-- TABLA: Cuenta
+CREATE TABLE Cuenta (
+    idCuenta INT PRIMARY KEY,
+    nroCuenta VARCHAR(30),
+    saldoCuenta DECIMAL(12,2),
+    idB INT NOT NULL,
+    idC INT NOT NULL,
+    FOREIGN KEY (idB) REFERENCES Banco(idB),
+    FOREIGN KEY (idC) REFERENCES Cliente(idC)
+);
+
+-- TABLA: Empleado
+CREATE TABLE Empleado (
+    idE INT PRIMARY KEY,
+    tipoDocumE VARCHAR(20),
+    nroDocumE VARCHAR(20),
+    nombresE VARCHAR(50),
+    paternoE VARCHAR(50),
+    maternoE VARCHAR(50),
+    celularE VARCHAR(20)
+);
+
+-- TABLA: Operacion
+CREATE TABLE Operacion (
+    idOpe INT PRIMARY KEY,
+    tipoOpe VARCHAR(50),
+    fechaHoraOpe DATETIME,
+    montoOpe DECIMAL(10,2),
+    comisionOpe DECIMAL(10,2),
+    idCuenta INT NOT NULL,
+    idC INT NOT NULL,
+    idE INT NOT NULL,
+    FOREIGN KEY (idCuenta) REFERENCES Cuenta(idCuenta),
+    FOREIGN KEY (idC) REFERENCES Cliente(idC),
+    FOREIGN KEY (idE) REFERENCES Empleado(idE)
+);
+3. Sistema del INPE (Asistencia de personal)Toda la gestión de turnos y asistencias se guardará en INPE_Asistencia.  SQLCREATE DATABASE INPE_Asistencia;
+USE INPE_Asistencia;
+
+-- TABLA: Año
+CREATE TABLE Ano (
+    idAno INT PRIMARY KEY,
+    inicioAno DATE,
+    finAno DATE
+);
+
+-- TABLA: Turno
+CREATE TABLE Turno (
+    idT INT PRIMARY KEY,
+    nombreT VARCHAR(50),
+    inicioT TIME,
+    finT TIME,
+    idAno INT NOT NULL,
+    FOREIGN KEY (idAno) REFERENCES Ano(idAno)
+);
+
+-- TABLA: Empleado
+CREATE TABLE Empleado (
+    idE INT PRIMARY KEY,
+    tipoDocumE VARCHAR(20),
+    nroDocumE VARCHAR(20),
+    nombresE VARCHAR(50),
+    paternoE VARCHAR(50),
+    maternoE VARCHAR(50),
+    celularE VARCHAR(20),
+    idSupervisor INT, -- Relación reflexiva (Supervisor)
+    FOREIGN KEY (idSupervisor) REFERENCES Empleado(idE)
+);
+
+-- TABLA: Asistencia
+CREATE TABLE Asistencia (
+    idA INT PRIMARY KEY,
+    fechaA DATE,
+    diaA VARCHAR(20),
+    esFeriadoA CHAR(2), -- 'SI' o 'NO'
+    asistioA CHAR(2),
+    tardoA CHAR(2),
+    horaEntradaA TIME,
+    horaSalidaA TIME,
+    idT INT NOT NULL,
+    idE INT NOT NULL,
+    FOREIGN KEY (idT) REFERENCES Turno(idT),
+    FOREIGN KEY (idE) REFERENCES Empleado(idE)
+);
+4. Pollería "Don Gallino" (Venta de platillos y bebidas)La información comercial de este negocio estará dentro de DonGallino_Ventas.  SQLCREATE DATABASE DonGallino_Ventas;
+USE DonGallino_Ventas;
+
+-- TABLA: Cliente
+CREATE TABLE Cliente (
+    idC INT PRIMARY KEY,
+    tipoDocumC VARCHAR(20),
+    nroDocumC VARCHAR(20),
+    nombresC VARCHAR(50),
+    paternoC VARCHAR(50),
+    maternoC VARCHAR(50),
+    celularC VARCHAR(20)
+);
+
+-- TABLA: Comprobante
+CREATE TABLE Comprobante (
+    idComp INT PRIMARY KEY,
+    fechaHoraComp DATETIME,
+    totalComp DECIMAL(10,2),
+    idC INT NOT NULL,
+    FOREIGN KEY (idC) REFERENCES Cliente(idC)
+);
+
+-- TABLA: Categoria
+CREATE TABLE Categoria (
+    idCat INT PRIMARY KEY,
+    nombreCat VARCHAR(50),
+    descripcionCat VARCHAR(150)
+);
+
+-- TABLA: Producto
+CREATE TABLE Producto (
+    idP INT PRIMARY KEY,
+    nombreP VARCHAR(100),
+    descripcionP VARCHAR(250),
+    precioReferencialP DECIMAL(10,2),
+    idCat INT NOT NULL,
+    FOREIGN KEY (idCat) REFERENCES Categoria(idCat)
+);
+
+-- TABLA: Detalle
+CREATE TABLE Detalle (
+    idDet INT PRIMARY KEY,
+    cantidadDet INT,
+    precioRealUnitarioDet DECIMAL(10,2),
+    subtotalDet DECIMAL(10,2),
+    idComp INT NOT NULL,
+    idP INT NOT NULL,
+    FOREIGN KEY (idComp) REFERENCES Comprobante(idComp),
+    FOREIGN KEY (idP) REFERENCES Producto(idP)
+);
+5. Sistema "Electro Track" (Entrada y salida de electrodomésticos)El control de almacén se creará en ElectroTrack_Almacen.  SQLCREATE DATABASE ElectroTrack_Almacen;
+USE ElectroTrack_Almacen;
+
+-- TABLA: Proveedor
+CREATE TABLE Proveedor (
+    idP INT PRIMARY KEY,
+    razonSocialP VARCHAR(100),
+    direccionP VARCHAR(150)
+);
+
+-- TABLA: OrdenDeCompra
+CREATE TABLE OrdenDeCompra (
+    idOrden INT PRIMARY KEY,
+    fechaHoraOrden DATETIME,
+    totalOrden DECIMAL(12,2),
+    idP INT NOT NULL,
+    FOREIGN KEY (idP) REFERENCES Proveedor(idP)
+);
+
+-- TABLA: Cliente
+CREATE TABLE Cliente (
+    idC INT PRIMARY KEY,
+    tipoDocumC VARCHAR(20),
+    nroDocumC VARCHAR(20),
+    nombresC VARCHAR(50),
+    paternoC VARCHAR(50),
+    maternoC VARCHAR(50),
+    celularC VARCHAR(20)
+);
+
+-- TABLA: Comprobante
+CREATE TABLE Comprobante (
+    idComp INT PRIMARY KEY,
+    tipoComp VARCHAR(50),
+    fechaHoraComp DATETIME,
+    totalComp DECIMAL(12,2),
+    idC INT NOT NULL,
+    FOREIGN KEY (idC) REFERENCES Cliente(idC)
+);
+
+-- TABLA: Electrodomestico
+CREATE TABLE Electrodomestico (
+    idE INT PRIMARY KEY,
+    nombreE VARCHAR(100),
+    marcaE VARCHAR(50),
+    modeloE VARCHAR(50),
+    precioVentaE DECIMAL(10,2),
+    precioCompraE DECIMAL(10,2)
+);
+
+-- TABLA: detalleDeIngresoSalida
+CREATE TABLE detalleDeIngresoSalida (
+    idDet INT PRIMARY KEY,
+    tipoDet VARCHAR(20), -- 'Ingreso' o 'Salida'
+    subtotalDet DECIMAL(10,2),
+    cantidadDet INT,
+    idOrden INT,         -- Puede ser nulo si es una salida/venta
+    idComp INT,          -- Puede ser nulo si es un ingreso/compra
+    idE INT NOT NULL,
+    FOREIGN KEY (idOrden) REFERENCES OrdenDeCompra(idOrden),
+    FOREIGN KEY (idComp) REFERENCES Comprobante(idComp),
+    FOREIGN KEY (idE) REFERENCES Electrodomestico(idE)
+);
+6. Clínica Mac Salud (Asistencia de enfermeras)Los datos del personal médico y áreas físicas se van a MacSalud_Asistencia.  SQLCREATE DATABASE MacSalud_Asistencia;
+USE MacSalud_Asistencia;
+
+-- TABLA: Enfermero
+CREATE TABLE Enfermero (
+    idE INT PRIMARY KEY,
+    tipoDocumE VARCHAR(20),
+    nroDocumE VARCHAR(20),
+    nombresE VARCHAR(50),
+    paternoE VARCHAR(50),
+    maternoE VARCHAR(50),
+    fechaNacimientoE DATE,
+    generoE VARCHAR(20)
+);
+
+-- TABLA: Ambiente
+CREATE TABLE Ambiente (
+    idAmb INT PRIMARY KEY,
+    nroAmb VARCHAR(10),
+    ubicacionAmb VARCHAR(100)
+);
+
+-- TABLA: Calendario
+CREATE TABLE Calendario (
+    idC INT PRIMARY KEY,
+    inicioC DATE,
+    finC DATE,
+    nombreC VARCHAR(50)
+);
+
+-- TABLA: Asistencia
+CREATE TABLE Asistencia (
+    idA INT PRIMARY KEY,
+    fechaA DATE,
+    diaA VARCHAR(20),
+    asistioA CHAR(2),
+    tardoA CHAR(2),
+    horaEntradaA TIME,
+    horaSalidaA TIME,
+    justificacionA VARCHAR(250),
+    esDescansoA CHAR(2),
+    idE INT NOT NULL,
+    idAmb INT NOT NULL,
+    idC INT NOT NULL,
+    FOREIGN KEY (idE) REFERENCES Enfermero(idE),
+    FOREIGN KEY (idAmb) REFERENCES Ambiente(idAmb),
+    FOREIGN KEY (idC) REFERENCES Calendario(idC)
+);
+7. Pollería Los Ángeles (Facturación electrónica)Este sistema se despliega de manera individual bajo el nombre LosAngeles_Facturacion.  SQLCREATE DATABASE LosAngeles_Facturacion;
+USE LosAngeles_Facturacion;
+
+-- TABLA: Cliente
+CREATE TABLE Cliente (
+    idC INT PRIMARY KEY,
+    tipoDocumC VARCHAR(20),
+    nroDocumC VARCHAR(20),
+    nombresC VARCHAR(50),
+    paternoC VARCHAR(50),
+    maternoC VARCHAR(50),
+    celularC VARCHAR(20)
+);
+
+-- TABLA: Comprobante
+CREATE TABLE Comprobante (
+    idComp INT PRIMARY KEY,
+    fechaHoraComp DATETIME,
+    totalComp DECIMAL(10,2),
+    idC INT NOT NULL,
+    FOREIGN KEY (idC) REFERENCES Cliente(idC)
+);
+
+-- TABLA: Categoria
+CREATE TABLE Categoria (
+    idCat INT PRIMARY KEY,
+    nombreCat VARCHAR(50),
+    descripcionCat VARCHAR(150)
+);
+
+-- TABLA: Producto
+CREATE TABLE Producto (
+    idP INT PRIMARY KEY,
+    nombreP VARCHAR(100),
+    descripcionP VARCHAR(250),
+    precioReferencialP DECIMAL(10,2),
+    idCat INT NOT NULL,
+    FOREIGN KEY (idCat) REFERENCES Categoria(idCat)
+);
+
+-- TABLA: Detalle
+CREATE TABLE Detalle (
+    idDet INT PRIMARY KEY,
+    cantidadDet INT,
+    precioRealUnitarioDet DECIMAL(10,2),
+    subtotalDet DECIMAL(10,2),
+    idComp INT NOT NULL,
+    idP INT NOT NULL,
+    FOREIGN KEY (idComp) REFERENCES Comprobante(idComp),
+    FOREIGN KEY (idP) REFERENCES Producto(idP)
+);
+8. Gimnasio 'Titanium' (Asistencia de clientes)Por último, el control de accesos y clases deportivas se guardará en Titanium_Gym.  SQLCREATE DATABASE Titanium_Gym;
+USE Titanium_Gym;
+
+-- TABLA: Cliente
+CREATE TABLE Cliente (
+    idC INT PRIMARY KEY,
+    tipoDocumC VARCHAR(20),
+    nroDocumC VARCHAR(20),
+    nombresC VARCHAR(50),
+    paternoC VARCHAR(50),
+    maternoC VARCHAR(50),
+    generoC VARCHAR(20),
+    fechaNacimC DATE,
+    enfermedadesC VARCHAR(250),
+    celularC VARCHAR(20)
+);
+
+-- TABLA: Disciplina
+CREATE TABLE Disciplina (
+    idD INT PRIMARY KEY,
+    nombreD VARCHAR(50),
+    descripcionD VARCHAR(150)
+);
+
+-- TABLA: GrupoDisciplina
+CREATE TABLE GrupoDisciplina (
+    idG INT PRIMARY KEY,
+    nombreG VARCHAR(50),
+    fechaInicioG DATE,
+    fechaFinG DATE,
+    idD INT NOT NULL,
+    FOREIGN KEY (idD) REFERENCES Disciplina(idD)
+);
+
+-- TABLA: Asistencia
+CREATE TABLE Asistencia (
+    idA INT PRIMARY KEY,
+    fechaA DATE,
+    diaA VARCHAR(20),
+    esFeriadoA CHAR(2),
+    asistioA CHAR(2),
+    horaEntradaA TIME,
+    idC INT NOT NULL,
+    idG INT NOT NULL,
+    FOREIGN KEY (idC) REFERENCES Cliente(idC),
+    FOREIGN KEY (idG) REFERENCES GrupoDisciplina(idG)
+);
