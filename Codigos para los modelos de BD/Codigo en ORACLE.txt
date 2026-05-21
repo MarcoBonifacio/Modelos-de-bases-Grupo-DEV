@@ -1,0 +1,352 @@
+EJEMPLO 1
+CREATE TABLE Cliente (
+    idC NUMBER PRIMARY KEY,
+    tipoDocumC VARCHAR2(20),
+    nroDocumC VARCHAR2(20),
+    nombresC VARCHAR2(50),
+    paternoC VARCHAR2(50),
+    maternoC VARCHAR2(50),
+    celularC VARCHAR2(15)
+);
+
+CREATE TABLE Paquete (
+    idP NUMBER PRIMARY KEY,
+    descripcionP VARCHAR2(100),
+    pesoP NUMBER(10, 2)
+);
+
+CREATE TABLE Comprobante (
+    idComp NUMBER PRIMARY KEY,
+    fechaHoraComp TIMESTAMP,
+    totalComp NUMBER(10, 2),
+    OrigenComp VARCHAR2(50),
+    DestinoComp VARCHAR2(50),
+    idC NUMBER,
+    CONSTRAINT fk_shalom_cliente FOREIGN KEY (idC) REFERENCES Cliente(idC)
+);
+
+CREATE TABLE DetalleDelComprobante (
+    idDet NUMBER PRIMARY KEY,
+    precioPorKiloDet NUMBER(10, 2),
+    subtotalDet NUMBER(10, 2),
+    idComp NUMBER,
+    idP NUMBER,
+    CONSTRAINT fk_shalom_comp FOREIGN KEY (idComp) REFERENCES Comprobante(idComp),
+    CONSTRAINT fk_shalom_paq FOREIGN KEY (idP) REFERENCES Paquete(idP)
+);
+EJEMPLO 2
+CREATE TABLE Banco (
+    idB NUMBER PRIMARY KEY,
+    nombreB VARCHAR2(100),
+    paginaWebB VARCHAR2(100)
+);
+
+CREATE TABLE Cliente (
+    idC NUMBER PRIMARY KEY,
+    tipoDocumC VARCHAR2(20),
+    nroDocumC VARCHAR2(20),
+    nombresC VARCHAR2(50),
+    paternoc VARCHAR2(50),
+    maternoC VARCHAR2(50),
+    celularC VARCHAR2(15)
+);
+
+CREATE TABLE Empleado (
+    idE NUMBER PRIMARY KEY,
+    tipoDocumE VARCHAR2(20),
+    nroDocumE VARCHAR2(20),
+    nonbresE VARCHAR2(50),
+    paternoE VARCHAR2(50),
+    maternoE VARCHAR2(50),
+    celularE VARCHAR2(15)
+);
+
+CREATE TABLE Cuenta (
+    idCuenta NUMBER PRIMARY KEY,
+    nroCuenta VARCHAR2(50),
+    saldoCuenta NUMBER(18, 2),
+    idB NUMBER,
+    idC NUMBER,
+    CONSTRAINT fk_giros_banco FOREIGN KEY (idB) REFERENCES Banco(idB),
+    CONSTRAINT fk_giros_cliente FOREIGN KEY (idC) REFERENCES Cliente(idC)
+);
+
+CREATE TABLE Operacion (
+    idOpe NUMBER PRIMARY KEY,
+    tipoOpe VARCHAR2(50),
+    fechaHoraOpe TIMESTAMP,
+    montoOpe NUMBER(18, 2),
+    comisionOpe NUMBER(10, 2),
+    idCuenta NUMBER,
+    idE NUMBER,
+    CONSTRAINT fk_giros_cuenta FOREIGN KEY (idCuenta) REFERENCES Cuenta(idCuenta),
+    CONSTRAINT fk_giros_emp FOREIGN KEY (idE) REFERENCES Empleado(idE)
+);
+EJEMPLO 3
+CREATE TABLE Ano (
+    idAno NUMBER PRIMARY KEY,
+    inicioAno DATE,
+    finAno DATE
+);
+
+CREATE TABLE Turno (
+    idT NUMBER PRIMARY KEY,
+    nombreT VARCHAR2(50),
+    inicioT VARCHAR2(8),
+    finT VARCHAR2(8),
+    idAno NUMBER,
+    CONSTRAINT fk_inpe_ano FOREIGN KEY (idAno) REFERENCES Ano(idAno)
+);
+
+CREATE TABLE Empleado (
+    idE NUMBER PRIMARY KEY,
+    tipoDocumE VARCHAR2(20),
+    nroDocumE VARCHAR2(20),
+    nombresE VARCHAR2(50),
+    paternoE VARCHAR2(50),
+    maternoE VARCHAR2(50),
+    celularE VARCHAR2(15),
+    idSupervisor NUMBER NULL,
+    CONSTRAINT fk_inpe_superv FOREIGN KEY (idSupervisor) REFERENCES Empleado(idE)
+);
+
+CREATE TABLE Asistencia (
+    idA NUMBER PRIMARY KEY,
+    fechaA DATE,
+    diaA VARCHAR2(15),
+    esFeriadoA NUMBER(1),
+    asistioA NUMBER(1),
+    tardoA NUMBER(1),
+    horaEntradaA VARCHAR2(8),
+    horaSalidaA VARCHAR2(8),
+    idT NUMBER,
+    idE NUMBER,
+    CONSTRAINT fk_inpe_turno FOREIGN KEY (idT) REFERENCES Turno(idT),
+    CONSTRAINT fk_inpe_emp FOREIGN KEY (idE) REFERENCES Empleado(idE)
+);
+EJEMPLO 4
+CREATE TABLE Cliente (
+    idC NUMBER PRIMARY KEY,
+    tipoDocumC VARCHAR2(20),
+    nroDocumC VARCHAR2(20),
+    nombresC VARCHAR2(50),
+    patemoC VARCHAR2(50),
+    maternoC VARCHAR2(50),
+    celularC VARCHAR2(15)
+);
+
+CREATE TABLE Categoria (
+    idCat NUMBER PRIMARY KEY,
+    nombreCat VARCHAR2(50),
+    descripcionCat VARCHAR2(200)
+);
+
+CREATE TABLE Producto (
+    idP NUMBER PRIMARY KEY,
+    nombreP VARCHAR2(100),
+    decripcionP VARCHAR2(200),
+    precioRefrencialP NUMBER(10, 2),
+    idCat NUMBER,
+    CONSTRAINT fk_gallino_cat FOREIGN KEY (idCat) REFERENCES Categoria(idCat)
+);
+
+CREATE TABLE Comprobante (
+    idComp NUMBER PRIMARY KEY,
+    fechaHoraComp TIMESTAMP,
+    totalComp NUMBER(10, 2),
+    idC NUMBER,
+    CONSTRAINT fk_gallino_cliente FOREIGN KEY (idC) REFERENCES Cliente(idC)
+);
+
+CREATE TABLE Detalle (
+    idDet NUMBER PRIMARY KEY,
+    cantidadDet NUMBER,
+    precioRealUnitarioDet NUMBER(10, 2),
+    subtotalDet NUMBER(10, 2),
+    idComp NUMBER,
+    idP NUMBER,
+    CONSTRAINT fk_gallino_comp FOREIGN KEY (idComp) REFERENCES Comprobante(idComp),
+    CONSTRAINT fk_gallino_prod FOREIGN KEY (idP) REFERENCES Producto(idP)
+);
+EJEMPLO 5
+CREATE TABLE Proveedor (
+    idP NUMBER PRIMARY KEY,
+    razonSocialP VARCHAR2(100),
+    direccionP VARCHAR2(200)
+);
+
+CREATE TABLE OrdenDeCompra (
+    idOrden NUMBER PRIMARY KEY,
+    fechaHoraOrden TIMESTAMP,
+    totalOrden NUMBER(12, 2),
+    idP NUMBER,
+    CONSTRAINT fk_electro_prov FOREIGN KEY (idP) REFERENCES Proveedor(idP)
+);
+
+CREATE TABLE Cliente (
+    idC NUMBER PRIMARY KEY,
+    tipoDocumC VARCHAR2(20),
+    nombresC VARCHAR2(50),
+    nroDocumC VARCHAR2(20),
+    paternoc VARCHAR2(50),
+    maternoC VARCHAR2(50),
+    celularC VARCHAR2(15)
+);
+
+CREATE TABLE Comprobante (
+    idComp NUMBER PRIMARY KEY,
+    tipoComp VARCHAR2(30),
+    fechaHoraComp TIMESTAMP,
+    totalComp NUMBER(12, 2),
+    idC NUMBER,
+    CONSTRAINT fk_electro_cliente FOREIGN KEY (idC) REFERENCES Cliente(idC)
+);
+
+CREATE TABLE Electrodomestico (
+    idE NUMBER PRIMARY KEY,
+    nombreE VARCHAR2(100),
+    marcaE VARCHAR2(50),
+    modeloE VARCHAR2(50),
+    precioVentaE NUMBER(10, 2),
+    precioCompraE NUMBER(10, 2)
+);
+
+CREATE TABLE detalleDeIngresoSalida (
+    idDet NUMBER PRIMARY KEY,
+    tipoDet VARCHAR2(20),
+    subtotalDet NUMBER(12, 2),
+    cantidadDet NUMBER,
+    idOrden NUMBER NULL,
+    idComp NUMBER NULL,
+    idE NUMBER,
+    CONSTRAINT fk_electro_orden FOREIGN KEY (idOrden) REFERENCES OrdenDeCompra(idOrden),
+    CONSTRAINT fk_electro_comp FOREIGN KEY (idComp) REFERENCES Comprobante(idComp),
+    CONSTRAINT fk_electro_elec FOREIGN KEY (idE) REFERENCES Electrodomestico(idE)
+);
+EJEMPLO 6
+CREATE TABLE Enfermero (
+    idE NUMBER PRIMARY KEY,
+    tipoDocumE VARCHAR2(20),
+    nroDocumE VARCHAR2(20),
+    nombresE VARCHAR2(50),
+    patemoE VARCHAR2(50),
+    matemoE VARCHAR2(50),
+    fechaNacimientoE DATE,
+    generoE CHAR(1)
+);
+
+CREATE TABLE Ambiente (
+    idAmb NUMBER PRIMARY KEY,
+    nroAmb VARCHAR2(10),
+    ubicacionAmb VARCHAR2(100)
+);
+
+CREATE TABLE Calendario (
+    idC NUMBER PRIMARY KEY,
+    inicioC DATE,
+    finC DATE,
+    nombreC VARCHAR2(50)
+);
+
+CREATE TABLE Asistencia (
+    idA NUMBER PRIMARY KEY,
+    fechaA DATE,
+    diaA VARCHAR2(15),
+    asistioA NUMBER(1),
+    tardoA NUMBER(1),
+    horaEntradaA VARCHAR2(8),
+    horaSalidaA VARCHAR2(8),
+    justificacionA VARCHAR2(200),
+    esDescansoA NUMBER(1),
+    idE NUMBER,
+    idAmb NUMBER,
+    idC NUMBER,
+    CONSTRAINT fk_macsalud_enf FOREIGN KEY (idE) REFERENCES Enfermero(idE),
+    CONSTRAINT fk_macsalud_amb FOREIGN KEY (idAmb) REFERENCES Ambiente(idAmb),
+    CONSTRAINT fk_macsalud_cal FOREIGN KEY (idC) REFERENCES Calendario(idC)
+);
+EJEMPLO 7
+CREATE TABLE Cliente (
+    idC NUMBER PRIMARY KEY,
+    tipoDocumC VARCHAR2(20),
+    nroDocumC VARCHAR2(20),
+    nombresC VARCHAR2(50),
+    patemoC VARCHAR2(50),
+    maternoC VARCHAR2(50),
+    celularC VARCHAR2(15)
+);
+
+CREATE TABLE Categoria (
+    idCat NUMBER PRIMARY KEY,
+    nombreCat VARCHAR2(50),
+    descripcionCat VARCHAR2(200)
+);
+
+CREATE TABLE Producto (
+    idP NUMBER PRIMARY KEY,
+    nombreP VARCHAR2(100),
+    decripcionP VARCHAR2(200),
+    precioRefrencialP NUMBER(10, 2),
+    idCat NUMBER,
+    CONSTRAINT fk_angeles_cat FOREIGN KEY (idCat) REFERENCES Categoria(idCat)
+);
+
+CREATE TABLE Comprobante (
+    idComp NUMBER PRIMARY KEY,
+    fechaHoraComp TIMESTAMP,
+    totalComp NUMBER(10, 2),
+    idC NUMBER,
+    CONSTRAINT fk_angeles_cliente FOREIGN KEY (idC) REFERENCES Cliente(idC)
+);
+
+CREATE TABLE Detalle (
+    idDet NUMBER PRIMARY KEY,
+    cantidadDet NUMBER,
+    precioRealUnitarioDet NUMBER(10, 2),
+    subtotalDet NUMBER(10, 2),
+    idComp NUMBER,
+    idP NUMBER,
+    CONSTRAINT fk_angeles_comp FOREIGN KEY (idComp) REFERENCES Comprobante(idComp),
+    CONSTRAINT fk_angeles_prod FOREIGN KEY (idP) REFERENCES Producto(idP)
+);
+EJEMPLO 8
+CREATE TABLE Cliente (
+    idC NUMBER PRIMARY KEY,
+    tipoDocumC VARCHAR2(20),
+    nroDocumC VARCHAR2(20),
+    nombresC VARCHAR2(50),
+    paternoC VARCHAR2(50),
+    maternoc VARCHAR2(50),
+    generoC CHAR(1),
+    fechaNacimC DATE,
+    enfremedadesC VARCHAR2(200),
+    celularC VARCHAR2(15)
+);
+
+CREATE TABLE Disciplina (
+    idD NUMBER PRIMARY KEY,
+    nombreD VARCHAR2(50),
+    descripcionD VARCHAR2(200)
+);
+
+CREATE TABLE GrupoDisciplina (
+    idG NUMBER PRIMARY KEY,
+    nombreG VARCHAR2(50),
+    fechaInicioG DATE,
+    fechaFinG DATE,
+    idD NUMBER,
+    CONSTRAINT fk_titanium_disc FOREIGN KEY (idD) REFERENCES Disciplina(idD)
+);
+
+CREATE TABLE Asistencia (
+    idA NUMBER PRIMARY KEY,
+    fechaA DATE,
+    diaA VARCHAR2(15),
+    esferiadoA NUMBER(1),
+    asistioA NUMBER(1),
+    horaEntradaA VARCHAR2(8),
+    idC NUMBER,
+    idG NUMBER,
+    CONSTRAINT fk_titanium_cliente FOREIGN KEY (idC) REFERENCES Cliente(idC),
+    CONSTRAINT fk_titanium_grupo FOREIGN KEY (idG) REFERENCES GrupoDisciplina(idG)
+);
